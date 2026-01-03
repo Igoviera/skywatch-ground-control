@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>SkyWatch - Ground Control</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<h1>🛰️ Radar em Tempo Real</h1>
+<div id="status-conexao">Aguardando sinal...</div>
+
+<div class="dashboard" id="radar-display"></div>
+
+<script>
+    async function atualizarRadar() {
+
+        const response = await fetch("/api/status");
+        const fleet = await response.json(); // Agora recebemos uma LISTA []
+
+        const display = document.getElementById("radar-display");
+        display.innerHTML = ""; // Limpa para redesenhar
+
+        fleet.forEach((aviao) => {
+          const isCritical = aviao.fuelLevel < 10;
+
+          // Cria o HTML do card dinamicamente
+          const cardHtml = `
+                  <div class="card ${isCritical ? "alert-low-fuel" : ""}">
+                      <div>
+                          <div class="label">✈️ Avião</div>
+                          <div class="value">${aviao.aircraftId}</div>
+                      </div>
+                      <div>
+                          <div class="label">☁️ Altitude</div>
+                          <div class="value">${aviao.altitude.toFixed(0)} ft</div>
+                      </div>
+                      <div>
+                          <div class="label">🕑 Velocidade</div>
+                          <div class="value">${aviao.speed} km/h</div>
+                      </div>
+                      <div>
+                          <div class="label">⛽ Combustível</div>
+                          <div class="value">${aviao.fuelLevel.toFixed(2)}%</div>
+                      </div>
+                       <button onClick="solicitarPouso('${aviao.aircraftId}', 'POUSAR')"
+        >               Solicitar Pouso
+                        </button>
+                  </div>
+              `;
+          display.innerHTML += cardHtml;
+        });
+
+        document.getElementById(
+          "status-conexao"
+        ).innerHTML = `Status: <span class='status-online'>CONECTADO (${fleet.length} aviões)</span>`;
+
+    }
+
+     async function solicitarPouso(id) {
+        try {
+          await fetch(`/api/status/comando/${id}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain",
+            },
+            body: "POUSAR",
+          });
+          console.log(`Comando enviado para ${id}`);
+        } catch (error) {
+          console.error("Erro ao enviar comando:", error);
+        }
+      }
+
+
+    setInterval(atualizarRadar, 1000);
+</script>
+</body>
+</html>

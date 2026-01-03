@@ -1,0 +1,75 @@
+/* style.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(26, 26, 26);
+}
+
+h1 {
+    margin-top: 40px;
+    color: white;
+}
+
+#status-conexao {
+    margin-bottom: 20px;
+}
+
+.dashboard {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(4, 350px);
+    gap: 20px;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.card {
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+    gap: 30px;
+    background: #0f3460;
+    padding: 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease; /* Para suavizar a cor no alerta */
+}
+
+.subCard {
+    display: flex;
+}
+
+button {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    cursor: pointer;
+    background: #42ba96;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%
+}
+
+.label {
+    font-size: 0.9rem;
+    color: #4e9af1;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.status-online {
+    color: #42ba96;
+    font-weight: bold;
+}
+
+/* Classe de alerta para o combustível */
+.alert-low-fuel {
+    background: #ff4b2b !important;
+    box-shadow: 0 0 15px #ff4b2b;
+}
