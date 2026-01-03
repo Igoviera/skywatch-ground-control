@@ -19,7 +19,7 @@ Ele atua como uma central de controle no solo.
 - Expor API REST para visualização (dashboard)
 
 ## 🧩 Arquitetura
-Imgem
+![Arquitetura](docs/architecture.png)
 
 ## 📡 Comunicação Kafka
 📥 Consumer
