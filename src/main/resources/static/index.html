@@ -30,6 +30,10 @@
                           <div class="label">✈️ Avião</div>
                           <div class="value">${aviao.aircraftId}</div>
                       </div>
+                       <div>
+                           <div class="label">📡 Status</div>
+                           <div class="value">${traduzirStatus(aviao.status)}</div>
+                        </div>
                       <div>
                           <div class="label">☁️ Altitude</div>
                           <div class="value">${aviao.altitude.toFixed(0)} ft</div>
@@ -42,9 +46,12 @@
                           <div class="label">⛽ Combustível</div>
                           <div class="value">${aviao.fuelLevel.toFixed(2)}%</div>
                       </div>
-                       <button onClick="solicitarPouso('${aviao.aircraftId}', 'POUSAR')"
-        >               Solicitar Pouso
-                        </button>
+                      ${aviao.status === "EM_VOO"
+                        ? `<button onClick="solicitarPouso('${aviao.aircraftId}')">
+                                Solicitar Pouso
+                         </button>`
+                        : `<div></div>`
+                      }
                   </div>
               `;
           display.innerHTML += cardHtml;
@@ -71,6 +78,14 @@
         }
       }
 
+      function traduzirStatus(status){
+            switch (status) {
+            case "EM_VOO": return "Em voo";
+            case "APROXIMACAO": return "Aproximação";
+            case "POUSO": return "Pousado";
+            default: return status;
+  }
+      }
 
     setInterval(atualizarRadar, 1000);
 </script>

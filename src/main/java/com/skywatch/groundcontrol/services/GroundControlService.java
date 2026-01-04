@@ -42,7 +42,6 @@ public class GroundControlService {
                     data.getTimestamp(),
                     last.getTimestamp()
             );
-            return;
         }
 
         LOGGER.info("Aeronave: {} monitorada", data.getAircraftId());

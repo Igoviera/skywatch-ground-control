@@ -1,5 +1,7 @@
 package com.skywatch.groundcontrol.model;
 
+import com.skywatch.groundcontrol.enums.AircraftStatus;
+
 import java.util.Objects;
 
 public class AircraftData {
@@ -8,16 +10,18 @@ public class AircraftData {
     private double speed;
     private double fuelLevel;
     private long timestamp;
+    private AircraftStatus status;
 
     public AircraftData() {
     }
 
-    public AircraftData(String aircraftId, double altitude, double speed, double fuelLevel, long timestamp) {
+    public AircraftData(String aircraftId, double altitude, double speed, double fuelLevel, long timestamp, AircraftStatus status) {
         this.aircraftId = aircraftId;
         this.altitude = altitude;
         this.speed = speed;
         this.fuelLevel = fuelLevel;
         this.timestamp = timestamp;
+        this.status = status;
     }
 
     public String getAircraftId() {
@@ -60,18 +64,28 @@ public class AircraftData {
         this.timestamp = timestamp;
     }
 
+    public AircraftStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AircraftStatus status) {
+        this.status = status;
+    }
+
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        AircraftData that = (AircraftData) object;
-        return Objects.equals(aircraftId, that.aircraftId);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AircraftData)) return false;
+        AircraftData that = (AircraftData) o;
+        return timestamp == that.timestamp &&
+                Objects.equals(aircraftId, that.aircraftId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aircraftId);
+        return Objects.hash(aircraftId, timestamp);
     }
+
 
     @Override
     public String toString() {

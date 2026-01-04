@@ -72,4 +72,7 @@ button {
 .alert-low-fuel {
     background: #ff4b2b !important;
     box-shadow: 0 0 15px #ff4b2b;
+    .label{
+            color: #ffffff;
+    }
 }
