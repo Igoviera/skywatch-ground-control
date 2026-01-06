@@ -1,5 +1,6 @@
 package com.skywatch.groundcontrol.services;
 
+import com.skywatch.groundcontrol.enums.CommandType;
 import com.skywatch.groundcontrol.model.AircraftData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,42 +20,33 @@ public class GroundControlService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String TOPIC = "skywatch-commands";
 
-    private final Map<String, AircraftData> fleetMap = new ConcurrentHashMap<>();
+    private final Map<String, AircraftData> aircraftFleet = new ConcurrentHashMap<>();
 
     private final Set<String> aircraftsInCriticalFuel = ConcurrentHashMap.newKeySet();
     private final Set<String> aircraftsLandingInitiated = ConcurrentHashMap.newKeySet();
+
+    private static final double CRITICAL_FUEL_THRESHOLD = 10.0;
+    private static final double EMERGENCY_LANDING_THRESHOLD = 8.0;
 
     public GroundControlService(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     @KafkaListener(topics = "skywatch-telemetry", groupId = "embraer-monitoring-group")
-    public void monitorAircraftTraffic(AircraftData data){
+    public void monitorAircraftTraffic(AircraftData aircraftData){
 
-        AircraftData last = fleetMap.get(data.getAircraftId());
+        aircraftFleet.put(aircraftData.getAircraftId(), aircraftData);
+        LOGGER.info("Aeronave: {} monitorada", aircraftData.getAircraftId());
 
-        if (last == null || data.getTimestamp() > last.getTimestamp()){
-            fleetMap.put(data.getAircraftId(), data);
-        } else {
-            LOGGER.debug(
-                    "Telemetria ignorada (antiga) | Aircraft={} | ts={} < {}",
-                    data.getAircraftId(),
-                    data.getTimestamp(),
-                    last.getTimestamp()
-            );
-        }
-
-        LOGGER.info("Aeronave: {} monitorada", data.getAircraftId());
-
-        if (data.getFuelLevel() < 10.0 && aircraftsInCriticalFuel.add(data.getAircraftId())){
+        if (aircraftData.getFuelLevel() < CRITICAL_FUEL_THRESHOLD && aircraftsInCriticalFuel.add(aircraftData.getAircraftId())){
             LOGGER.error("🚨 ALERTA: COMBUSTÍVEL CRÍTICO!  🚨");
-            LOGGER.error("Aeronave: {}", data.getAircraftId());
-            LOGGER.error("Combustével: {}%", String.format("%.2f", data.getFuelLevel()));
+            LOGGER.error("Aeronave: {}", aircraftData.getAircraftId());
+            LOGGER.error("Combustével: {}%", String.format("%.2f", aircraftData.getFuelLevel()));
         }
 
-        if (data.getFuelLevel() < 8.0 && aircraftsLandingInitiated.add(data.getAircraftId())){
-            enviarComando(data.getAircraftId(), "LAND");
-            LOGGER.warn("Comando LAND enviado automaticamente para {}", data.getAircraftId());
+        if (aircraftData.getFuelLevel() < EMERGENCY_LANDING_THRESHOLD && aircraftsLandingInitiated.add(aircraftData.getAircraftId())){
+            enviarComando(aircraftData.getAircraftId(), CommandType.POUSO.name());
+            LOGGER.warn("Comando POUSO enviado automaticamente para {}", aircraftData.getAircraftId());
         }
     }
 
@@ -64,6 +56,6 @@ public class GroundControlService {
     }
 
     public Collection<AircraftData> getLastData(){
-        return fleetMap.values();
+        return aircraftFleet.values();
     }
 }

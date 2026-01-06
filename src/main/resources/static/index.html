@@ -46,12 +46,10 @@
                           <div class="label">⛽ Combustível</div>
                           <div class="value">${aviao.fuelLevel.toFixed(2)}%</div>
                       </div>
-                      ${aviao.status === "EM_VOO"
-                        ? `<button onClick="solicitarPouso('${aviao.aircraftId}')">
+
+                       <button onClick="solicitarPouso('${aviao.aircraftId}')">
                                 Solicitar Pouso
-                         </button>`
-                        : `<div></div>`
-                      }
+                       </button>
                   </div>
               `;
           display.innerHTML += cardHtml;
@@ -70,7 +68,7 @@
             headers: {
               "Content-Type": "text/plain",
             },
-            body: "POUSAR",
+            body: "POUSO",
           });
           console.log(`Comando enviado para ${id}`);
         } catch (error) {
